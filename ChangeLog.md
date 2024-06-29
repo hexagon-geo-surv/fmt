@@ -1,4 +1,4 @@
-# 11.0.0 - TBD
+# 11.0.0 - 2024-06-29
 
 - Added `fmt/base.h` which provides a subset of the API with minimal include
   dependencies and enough functionality to replace all uses of the `printf`
