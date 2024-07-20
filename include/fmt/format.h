@@ -1113,13 +1113,15 @@ using uint64_or_128_t = conditional_t<num_bits<T>() <= 64, uint64_t, uint128_t>;
       (factor) * 100000000, (factor) * 1000000000
 
 // Converts value in the range [0, 100) to a string.
-constexpr auto digits2(size_t value) -> const char* {
+FMT_INLINE auto digits2(size_t value) -> const char* {
+  alignas(2) static const char digits[] =
+      "0001020304050607080910111213141516171819"
+      "2021222324252627282930313233343536373839"
+      "4041424344454647484950515253545556575859"
+      "6061626364656667686970717273747576777879"
+      "8081828384858687888990919293949596979899";
   // GCC generates slightly better code when value is pointer-size.
-  return &"0001020304050607080910111213141516171819"
-         "2021222324252627282930313233343536373839"
-         "4041424344454647484950515253545556575859"
-         "6061626364656667686970717273747576777879"
-         "8081828384858687888990919293949596979899"[value * 2];
+  return &digits[value * 2];
 }
 
 // Sign is a template parameter to workaround a bug in gcc 4.8.
@@ -1297,6 +1299,13 @@ FMT_CONSTEXPR20 auto format_decimal(Char* out, UInt value, int size)
   FMT_ASSERT(size >= count_digits(value), "invalid digit count");
   out += size;
   Char* end = out;
+  if (is_constant_evaluated()) {
+    for (int i = 0; i < size; ++i) {
+      *--out = value % 10;
+      value /= 10;
+    }
+    return {out, end};
+  }
   while (value >= 100) {
     // Integer division is slow so do it for a group of two digits instead
     // of for every digit. The idea comes from the talk by Alexandrescu

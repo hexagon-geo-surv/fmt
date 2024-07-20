@@ -471,6 +471,11 @@ TEST(memory_buffer_test, max_size_allocator_overflow) {
   EXPECT_THROW(buffer.resize(161), std::exception);
 }
 
+TEST(format_test, align_digits) {
+  const char* digits2 = fmt::detail::digits2(0);
+  EXPECT_EQ(fmt::detail::bit_cast<fmt::detail::uintptr_t>(digits2) & 1, 0);
+}
+
 TEST(format_test, exception_from_lib) {
   EXPECT_THROW_MSG(fmt::report_error("test"), format_error, "test");
 }
