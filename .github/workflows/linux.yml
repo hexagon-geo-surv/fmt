@@ -145,8 +145,13 @@ jobs:
       if: ${{ matrix.cxx == 'clang++-3.6' }}
 
     - name: Add repositories for newer GCC
+      # Avoid `apt-add-repository ppa:...`, which hits the Launchpad REST API
+      # and intermittently times out on GitHub-hosted runners.
       run: |
-        sudo apt-add-repository ppa:ubuntu-toolchain-r/test
+        curl -fsSL 'https://keyserver.ubuntu.com/pks/lookup?op=get&search=0x60C317803A41BA51845E371A1E9377A2BA9EF27F' \
+          | sudo gpg --dearmor -o /etc/apt/trusted.gpg.d/ubuntu-toolchain-r.gpg
+        echo 'deb http://ppa.launchpad.net/ubuntu-toolchain-r/test/ubuntu jammy main' \
+          | sudo tee /etc/apt/sources.list.d/ubuntu-toolchain-r.list
       if: ${{ matrix.cxx == 'g++-13' || matrix.cxx == 'g++-15' }}
 
     - name: Install LLVM-20
