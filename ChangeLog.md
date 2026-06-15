@@ -1,4 +1,4 @@
-# 12.2.0 - TBD
+# 12.2.0 - 2026-06-15
 
 - Added a C11 API that brings fast, type-safe formatting to C. The new
   `fmt-c` library and `fmt/fmt-c.h` header use `_Generic` to dispatch on
